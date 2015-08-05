@@ -655,7 +655,7 @@ function drush_idu_iduSpecial($pid, $operation) {
  *   The number of repair operations performed, or zero if none.
  */
 function idu_drush_fix_Derivatives($pid) {
-  module_load_include('inc', 'islandora_solution_pack_audio', 'includes/derivatives');
+  // module_load_include('inc', 'islandora_solution_pack_audio', 'includes/derivatives');
 
   try {
     $object = idu_repo( )->getObject($pid);

@@ -14,6 +14,7 @@ function idu_init( ) {
   module_load_include('inc', 'islandora_paged_content', 'includes/utilities');
   module_load_include('inc', 'islandora_paged_content', 'includes/manage_pages');
   module_load_include('inc', 'idu', 'idu_constants');
+  module_load_include('inc', 'islandora_audio', 'includes/derivatives');
   return;
 }
 
