@@ -144,10 +144,10 @@ function idu_drush_command( ) {
 
     ),
     'options' => array(
-      'fedoraURL' => dt("Specifies the URL to Fedora like http://repository7.grinnell.edu:8080/fedora. Default is the example shown here."),
-      'username' => dt("Specifies the Fedora repository user name. Default is 'fedoraAdmin'."),
-      'password' => dt("Specifies the password of the Fedora user. There is NO default."),
-      'repeat'   => dt("Specifies the total number of PIDs, beginning with 'first' to be processed.  Default is 1."),
+     // 'fedoraURL' => dt("Specifies the URL to Fedora like http://repository7.grinnell.edu:8080/fedora. Default is the example shown here."),
+     // 'username' => dt("Specifies the Fedora repository user name. Default is 'fedoraAdmin'."),
+     // 'password' => dt("Specifies the password of the Fedora user. There is NO default."),
+     // 'repeat'   => dt("Specifies the total number of PIDs, beginning with 'first' to be processed.  Default is 1."),
       'dsid'     => dt("Specifies the datastream ID in which to make changes."),
       'collection' => dt("Specifies the target collection (may include a wildcard like '*test') from which objects will be selected."),
       'date'     => dt("Specifies a dc:date value for the UpdateDC fix.  Default is 'Unspecified'."),
@@ -236,12 +236,12 @@ function idu_drush_command( ) {
 /**
  * Examine common iduX command arguments/options and set control variables for subsequent processing.
  *
- * @param string $first
- *   The 'first' PID argument as specified in the iduX command.
+ * @param string $pidSpec
+ *   The range (or single) PID argument as specified in the iduX command.
  * @param int $last
- *   Returns the 'last' PID value based on the --repeat option.  Note that $last may or may not be an existing object.
+ *   Returns the 'last' PID value based on the range specification, if any.  Note that $last may or may not be an existing object.
  * @param int $pidn
- *   Returns the integer PID number of 'first'.  Note that $pidn may or may not be an existing object.
+ *   Returns the integer PID number of 'range'.  Note that $pidn may or may not be an existing object.
  * @param int $range
  *   Returns 'last' - 'first' + 1, the total number of PIDs to address.
  * @param string $namespace
@@ -252,9 +252,9 @@ function idu_drush_command( ) {
  *   An array of valid PID numbers, without a namespace prefix, from the specified range.
  *
  */
-function idu_drush_prep($first, &$last, &$pidn, &$range, &$namespace, $return=FALSE) {
+function idu_drush_prep($pidSpec, &$last, &$pidn, &$range, &$namespace, $return=FALSE) {
 
-  // Get some necessary options!
+  /* Get some necessary options!
   $fedoraURL = drush_get_option('fedoraURL', 'http://repository7.grinnell.edu:8080/fedora');
   $username = drush_get_option('username', 'fedoraAdmin');
   $password = drush_get_option('password', NULL);
@@ -264,12 +264,11 @@ function idu_drush_prep($first, &$last, &$pidn, &$range, &$namespace, $return=FA
   $connection->reuseConnection = TRUE;
   $repository = new FedoraRepository(
     new FedoraApi($connection),
-    new SimpleCache());
+    new SimpleCache());  */
 
-  /* Open a repository connection.
+  // Open a repository connection.
   $my_tuque = islandora_get_tuque_connection( );
   $repository = $my_tuque->repository;
-  */
 
   // Test fetch the islandora:root object to check the connection.
   $pid = "islandora:root";
@@ -281,36 +280,31 @@ function idu_drush_prep($first, &$last, &$pidn, &$range, &$namespace, $return=FA
   }
 
   // Initialize some things.
-  list($namespace, $pidN) = explode(':', $first);    // Break $first into namespace and PID number.
-
-  // If $pidN is not an integer...then we have only one PID to process...do it!
-  if (intval($pidN) === 0) {
-    drush_log("Completed fetch of a single object PID.", 'status');
-    return array($first);
-  }
+  list($namespace, $pidN) = explode(':', $pidSpec);    // Break the PID spec into namespace and PID number.
 
   list($begin, $end) = explode('-', $pidN);          // Break $pidN into beginning and end of range, if necessary
   $pidn = intval($begin);
 
-  // If no namespace given, use the icg_namespace variable.  Otherwise, set the icg_namespace variable.
+  if (is_null($end)) {
+    $repeat = 0;
+  } else {
+    $repeat = intval($end) - intval($begin);
+  }
+  $range = $repeat + 1;
+
+  // If $pidN is not an integer or if $end is null (there is no '-' separator defining a range)
+  // then we have only one PID to process...do it!
+  if (intval($pidN) === 0 || is_null($end)) {
+    drush_log("Completed fetch of a single object PID.", 'status');
+    return array($pidSpec);
+  }
+
+  /* If no namespace given, use the icg_namespace variable.  Otherwise, set the icg_namespace variable.
   if (is_null($namespace)) {
     $namespace = strstr(variable_get('icg_namespace', 'test'), ':', TRUE);
   } else {
     variable_set('icg_namespace', "$namespace:");
-  }
-
-  // Check for the --repeat option or a defined $end to the range.
-  if (!empty($end)) {
-    $repeat = intval($end) - intval($begin);
-  } else {
-    $repeat = intval(drush_get_option('repeat', 0));
-    if ($repeat < 0) {
-      drush_log("The --repeat option must be zero or greater!  Forcing --repeat set to zero.", 'warning');
-      $repeat = 0;
-    }
-  }
-
-  $range = $repeat + 1;
+  } */
 
   // Calculate first and last PID numbers and set variables accordingly.
   variable_set('icg_first', $pidn);
@@ -685,7 +679,11 @@ function drush_idu_iduSpecial($pid, $operation) {
  */
 function idu_drush_fix_Derivatives($pid) {
 
-  if (!$object = islandora_object_load($pid)) { return 0; }  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log("idu_drush_fix_Derivatives($pid) returned NO object!", 'error');
+    return 0;
+  }
 
   // Check for --mime option.  If present and the object has no OBJ or the OBJ MIME is not of the correct
   // type, then skip this object.
@@ -723,8 +721,8 @@ function idu_drush_fix_Derivatives($pid) {
       ++ $count;
       break;
     case 'islandora:sp-audioCModel' :
-      islandora_audio_create_mp3($object, TRUE);
       islandora_audio_create_thumbnail($object, TRUE);
+      islandora_audio_create_mp3($object, TRUE);
       ++ $count;
       break;
   }
@@ -1865,11 +1863,10 @@ function drush_idu_iduFix($first, $fix) {
   idu_drush_print_progress("iduFix - $fix");
   $count = 0;
 
-  // If there's only one PID and it's not numeric...process it.
-  if (is_null($pidn)) {
-    $pid = $pids[0];
-    $count += call_user_func($function, $pid, $preOpts);
-    idu_drush_post_to_file("iduFix - $fix: $pid complete.", NULL, 'public://iduFix_progress.log');
+  // If there's only one PID... process it.
+  if (count($pids) === 1) {
+    $count += call_user_func($function, $pids[0], $preOpts);
+    idu_drush_post_to_file("iduFix - $fix: $pids[0] complete.", NULL, 'public://iduFix_progress.log');
     idu_drush_print_progress("iduFix - $fix", 0, 1);
 
   } else {   // Operate on a range of PIDs.
