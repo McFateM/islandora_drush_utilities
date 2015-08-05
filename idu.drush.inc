@@ -144,6 +144,9 @@ function idu_drush_command( ) {
 
     ),
     'options' => array(
+      'fedoraURL' => dt("Specifies the URL to Fedora like http://repository7.grinnell.edu:8080/fedora. Default is the example shown here."),
+      'username' => dt("Specifies the Fedora repository user name. Default is 'fedoraAdmin'."),
+      'password' => dt("Specifies the password of the Fedora user. There is NO default."),
       'repeat'   => dt("Specifies the total number of PIDs, beginning with 'first' to be processed.  Default is 1."),
       'dsid'     => dt("Specifies the datastream ID in which to make changes."),
       'collection' => dt("Specifies the target collection (may include a wildcard like '*test') from which objects will be selected."),
@@ -251,16 +254,31 @@ function idu_drush_command( ) {
  */
 function idu_drush_prep($first, &$last, &$pidn, &$range, &$namespace, $return=FALSE) {
 
-  // Open a repository connection.
+  // Get some necessary options!
+  $fedoraURL = drush_get_option('fedoraURL', 'http://repository7.grinnell.edu:8080/fedora');
+  $username = drush_get_option('username', 'fedoraAdmin');
+  $password = drush_get_option('password', NULL);
+
+  // Open the repository.
+  $connection = new RepositoryConnection($fedoraURL, $username, $password);
+  $connection->reuseConnection = TRUE;
+  $repository = new FedoraRepository(
+    new FedoraApi($connection),
+    new SimpleCache());
+
+  /* Open a repository connection.
   $my_tuque = islandora_get_tuque_connection( );
   $repository = $my_tuque->repository;
+  */
 
   // Test fetch the islandora:root object to check the connection.
   $pid = "islandora:root";
   if (!$fedora_object = islandora_object_load($pid)) {
     drush_log("Error: idu_drush_prep was unable to verify a repository connection!", 'error');
     return FALSE;
-  };
+  } else {
+    drush_log("Connection to the repository is complete.", 'status');
+  }
 
   // Initialize some things.
   list($namespace, $pidN) = explode(':', $first);    // Break $first into namespace and PID number.
