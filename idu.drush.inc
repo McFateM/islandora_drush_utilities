@@ -251,6 +251,17 @@ function idu_drush_command( ) {
  */
 function idu_drush_prep($first, &$last, &$pidn, &$range, &$namespace, $return=FALSE) {
 
+  // Open a repository connection.
+  $my_tuque = islandora_get_tuque_connection( );
+  $repository = $my_tuque->repository;
+
+  // Test fetch the islandora:root object to check the connection.
+  $pid = "islandora:root";
+  if (!$fedora_object = islandora_object_load($pid)) {
+    drush_log("Error: idu_drush_prep was unable to verify a repository connection!", 'error');
+    return FALSE;
+  };
+
   // Initialize some things.
   list($namespace, $pidN) = explode(':', $first);    // Break $first into namespace and PID number.
 
@@ -655,13 +666,8 @@ function drush_idu_iduSpecial($pid, $operation) {
  *   The number of repair operations performed, or zero if none.
  */
 function idu_drush_fix_Derivatives($pid) {
-  // module_load_include('inc', 'islandora_solution_pack_audio', 'includes/derivatives');
 
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
-  }
+  if (!$object = islandora_object_load($pid)) { return 0; }  // for any exception...skip this PID
 
   // Check for --mime option.  If present and the object has no OBJ or the OBJ MIME is not of the correct
   // type, then skip this object.
@@ -681,26 +687,26 @@ function idu_drush_fix_Derivatives($pid) {
   // Create new derivatives.
   switch ($cModel) {
     case 'islandora:sp_basic_image' :
-      islandora_basic_image_create_thumbnail($object);
-      islandora_basic_image_create_medium_size($object);
+      islandora_basic_image_create_thumbnail($object, TRUE);
+      islandora_basic_image_create_medium_size($object, TRUE);
       ++ $count;
       break;
     case 'islandora:pageCModel' :
     case 'islandora:sp_large_image_cmodel' :
-      islandora_large_image_create_tn_derivative($object);
-      islandora_large_image_create_jpg_derivative($object);
-      islandora_large_image_create_jp2_derivative($object);
+      islandora_large_image_create_tn_derivative($object, TRUE);
+      islandora_large_image_create_jpg_derivative($object, TRUE);
+      islandora_large_image_create_jp2_derivative($object, TRUE);
       ++ $count;
       break;
     case 'islandora:sp_pdf' :
-      islandora_pdf_add_fulltext_derivative($object);
-      islandora_pdf_add_preview_derivative($object);
-      islandora_pdf_add_tn_derivative($object);
+      islandora_pdf_add_fulltext_derivative($object, TRUE);
+      islandora_pdf_add_preview_derivative($object, TRUE);
+      islandora_pdf_add_tn_derivative($object, TRUE);
       ++ $count;
       break;
     case 'islandora:sp-audioCModel' :
-      islandora_audio_create_mp3($object);
-      islandora_audio_create_thumbnail($object);
+      islandora_audio_create_mp3($object, TRUE);
+      islandora_audio_create_thumbnail($object, TRUE);
       ++ $count;
       break;
   }
@@ -843,6 +849,8 @@ function idu_drush_getPIDs($ns, $first, $last) {
     try {
       $object = idu_repo( )->getObject($pid);
     } catch (Exception $e) {
+      drush_log("Exception: Attempting to open $pid.  The exception message follows:", 'error');
+      drush_log($e, 'status');
       $notFound++;
       continue;  // for any exception...skip this PID
     }
