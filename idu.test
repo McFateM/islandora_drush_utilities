@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file
+ * Test file for icg_object_control module.
+ */
+
+/**
+ * Default test case for the icg_object_control module.
+ */
+class ICGMetadataControlTestCase extends DrupalWebTestCase {
+
+  public static function getInfo( ) {
+    return array(
+      'name' => 'ICG Metadata Control',
+      'description' => 'Various tests on the icg_object_control module.' ,
+      'group' => 'ICG Modules',
+    );
+  }
+
+  function setUp( ) {
+    parent::setUp( 'icg_object_control' );
+  }
+
+}

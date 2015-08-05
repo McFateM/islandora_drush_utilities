@@ -1,0 +1,9 @@
+;$ID$
+name = Islandora Drush Utility (IDU)
+description = Drupal 7 custom collection of Drush functions to manipulate Fedora objects and their datastreams.
+package = ICG Modules
+core = 7.x
+dependencies[] = repository_control
+files[] = idu.module
+files[] = log_record.inc
+files[] = csv_cell.inc
