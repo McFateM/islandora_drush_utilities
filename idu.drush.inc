@@ -5,7 +5,7 @@
  * 
  * drush_log('Log an event using drush', 'warning');
  * drush_set_error('Set an error with drush.');
- * dt('Translate strings with drush');
+ * t('Translate strings with drush');
  * drush_print('Print to command line with drush');
  * drush_print_table($rows, TRUE); //print a command line table with drush
  * drush_confirm('Are you sure you want to continue?', $indent = 0); //Add drush confirmation
@@ -18,16 +18,17 @@
 function idu_drush_help($command) {
   switch ($command) {
     case 'drush:iduTest':
-      return dt('Just a temporary test feature.');
+      return t('Just a temporary test feature.');
     case 'drush:iduFix':
-      return dt("Attempts to apply the specified 'Fix' to one or more existing PIDs.");
+      return t("Attempts to apply the specified 'Fix' to one or more existing PIDs.");
     case 'drush:iduUpdate':
-      return dt("Attempts to apply the specified 'Update' to one or more existing PIDs.");
+      return t("Attempts to apply the specified 'Update' to one or more existing PIDs.");
     case 'drush:iduSpecial':
-      return dt("Attempts to apply the specified 'Special' operation to a single existing PID.");
+      return t("Attempts to apply the specified 'Special' operation to a single existing PID.");
     case 'drush:iduHandle':
-      return dt("Attempts to apply the specified Handle operation to one or more existing PIDs.");
+      return t("Attempts to apply the specified Handle operation to one or more existing PIDs.");
   }
+  return;
 }
 
 /**
@@ -37,7 +38,7 @@ function idu_drush_command( ) {
   $items = array();
 
   $items['iduTest'] = array(
-    'description' => dt('Just a temporary test feature.'),
+    'description' => t('Just a temporary test feature.'),
     'examples' => array(
       'Example' => 'drush iduTest',
     ),
@@ -45,9 +46,9 @@ function idu_drush_command( ) {
   );
 
   $items['iduFix'] = array(
-    'description' => dt("Attempts to apply the specified 'fix' to one or more existing PIDs."),
+    'description' => t("Attempts to apply the specified 'fix' to one or more existing PIDs."),
     'arguments'   => array(
-      'first' => dt("First PID to process.  The namespace portion of this PID defines the default primary namespace.  This parameter may be specified as 'namespace:first-last' in place of the --repeat option."),
+      'first' => t("First PID to process.  The namespace portion of this PID defines the default primary namespace.  This parameter may be specified as 'namespace:first-last' in place of the --repeat option."),
       'fix'   => "Completes the name of the drush_idu_fix_NAME function to be called for each processed object.  Available Fix functions are:
 
       Clean -
@@ -144,27 +145,27 @@ function idu_drush_command( ) {
 
     ),
     'options' => array(
-     // 'fedoraURL' => dt("Specifies the URL to Fedora like http://repository7.grinnell.edu:8080/fedora. Default is the example shown here."),
-     // 'username' => dt("Specifies the Fedora repository user name. Default is 'fedoraAdmin'."),
-     // 'password' => dt("Specifies the password of the Fedora user. There is NO default."),
-     // 'repeat'   => dt("Specifies the total number of PIDs, beginning with 'first' to be processed.  Default is 1."),
-      'dsid'     => dt("Specifies the datastream ID in which to make changes."),
-      'collection' => dt("Specifies the target collection (may include a wildcard like '*test') from which objects will be selected."),
-      'date'     => dt("Specifies a dc:date value for the UpdateDC fix.  Default is 'Unspecified'."),
-      'creator'  => dt("Specifies a dc:creator value for the UpdateDC fix.  Default is 'Unknown'."),
-      'source'   => dt("Specifies the DC field from which dc:source is to be constructed.  Default is 'dc:creator'."),
-      'xpath'    => dt("Specifies a metadata XPath whenever one is needed. Note that it is wise to put your XPath in double quotes and use single quotes within where necessary."),
-      'find'     => dt("Specifies text to be found (and in some cases replaced)."),
-      'replace'  => dt("Specifies the text that 'find' will be replaced with."),
-      'substitutionsFile' => dt("In place of 'find' and 'replace', this option specifies the path to a 'csv' style file from which 'find, replace' pairs will be read."),
-      'self'     => dt("Specifies the path to the self-transform XSL file to be applied. Defaults to public://cleanup_mods.xsl."),
-      'xsl'      => dt("Specifies the path to the MODS-to-DC transform XSL file to be applied. Defaults to public://mods_to_dc_grinnell-modified-2014-09-24.xsl."),
-      'image'    => dt("Specifies the path to a jpeg image to be applied by the specified Fix operation.  Defaults to public://audio_thumbnail.jpg."),
-      'mime'     => dt("Specifies the OBJ MIME type of objects to process.  Defaults to 'image/tiff'."),
-      'convert'  => dt("Specifies a file containing ImageMagick 'convert' options for the ConvertTIFtoJP2 fix."),
-      'compress' => dt("Specifies a file containing Kakadu 'compress' options for the ConvertTIFtoJP2 fix."),
-      'sibling'  => dt("Specifies the PID of one existing child object in need of a sibling."),
-      'parent'   => dt("Specifies the PID of an existing parent object in need of a child."),
+     // 'fedoraURL' => t("Specifies the URL to Fedora like http://repository7.grinnell.edu:8080/fedora. Default is the example shown here."),
+     // 'username' => t("Specifies the Fedora repository user name. Default is 'fedoraAdmin'."),
+     // 'password' => t("Specifies the password of the Fedora user. There is NO default."),
+     // 'repeat'   => t("Specifies the total number of PIDs, beginning with 'first' to be processed.  Default is 1."),
+      'dsid'     => t("Specifies the datastream ID in which to make changes."),
+      'collection' => t("Specifies the target collection (may include a wildcard like '*test') from which objects will be selected."),
+      'date'     => t("Specifies a dc:date value for the UpdateDC fix.  Default is 'Unspecified'."),
+      'creator'  => t("Specifies a dc:creator value for the UpdateDC fix.  Default is 'Unknown'."),
+      'source'   => t("Specifies the DC field from which dc:source is to be constructed.  Default is 'dc:creator'."),
+      'xpath'    => t("Specifies a metadata XPath whenever one is needed. Note that it is wise to put your XPath in double quotes and use single quotes within where necessary."),
+      'find'     => t("Specifies text to be found (and in some cases replaced)."),
+      'replace'  => t("Specifies the text that 'find' will be replaced with."),
+      'substitutionsFile' => t("In place of 'find' and 'replace', this option specifies the path to a 'csv' style file from which 'find, replace' pairs will be read."),
+      'self'     => t("Specifies the path to the self-transform XSL file to be applied. Defaults to public://cleanup_mods.xsl."),
+      'xsl'      => t("Specifies the path to the MODS-to-DC transform XSL file to be applied. Defaults to public://mods_to_dc_grinnell-modified-2014-09-24.xsl."),
+      'image'    => t("Specifies the path to a jpeg image to be applied by the specified Fix operation.  Defaults to public://audio_thumbnail.jpg."),
+      'mime'     => t("Specifies the OBJ MIME type of objects to process.  Defaults to 'image/tiff'."),
+      'convert'  => t("Specifies a file containing ImageMagick 'convert' options for the ConvertTIFtoJP2 fix."),
+      'compress' => t("Specifies a file containing Kakadu 'compress' options for the ConvertTIFtoJP2 fix."),
+      'sibling'  => t("Specifies the PID of one existing child object in need of a sibling."),
+      'parent'   => t("Specifies the PID of an existing parent object in need of a child."),
 ),
     'examples' => array(
       'Example' => "drush iduF grinnell:10000 ChangeText --dsid=MODS --xpath=\"/mods:mods/mods:relatedItem/mods:identifier[@type='uri']\"",
@@ -173,9 +174,9 @@ function idu_drush_command( ) {
   );
 
   $items['iduUpdate'] = array(
-    'description' => dt("Attempts to apply the specified 'Update' to one or more existing PIDs."),
+    'description' => t("Attempts to apply the specified 'Update' to one or more existing PIDs."),
     'arguments'   => array(
-      'first'  => dt("First PID to process.  The namespace portion of this PID defines the default primary namespace.  This parameter may be specified as 'namespace:first-last' in place of the --repeat option."),
+      'first'  => t("First PID to process.  The namespace portion of this PID defines the default primary namespace.  This parameter may be specified as 'namespace:first-last' in place of the --repeat option."),
       'update' => "Completes the name of the drush_idu_update_NAME function to be called for each processed object.  Available Update functions are:
 
       Dates -
@@ -186,7 +187,7 @@ function idu_drush_command( ) {
     ),
 
     'options' => array(
-      'repeat'   => dt("Specifies the total number of PIDs, beginning with 'first' to be processed.  Default is 1."),
+      'repeat'   => t("Specifies the total number of PIDs, beginning with 'first' to be processed.  Default is 1."),
     ),
 
     'examples' => array(
@@ -197,17 +198,17 @@ function idu_drush_command( ) {
 
 
   $items['iduHandle'] = array(
-    'description' => dt("Attempts to apply the specified Handle operation to one or more existing PIDs."),
+    'description' => t("Attempts to apply the specified Handle operation to one or more existing PIDs."),
     'arguments'   => array(
-      'first'     => dt("First PID to process.  The namespace portion of this PID defines the default primary namespace.  This parameter may be specified as 'namespace:first-last' in place of the --repeat option."),
+      'first'     => t("First PID to process.  The namespace portion of this PID defines the default primary namespace.  This parameter may be specified as 'namespace:first-last' in place of the --repeat option."),
       'handle_op' => "Completes the name of the drush_idu_Handle_NAME function to be called for each processed object.  Available Handle functions are:
 
            Create - Attempts to create a new handle for an existing object.
            Modify - Attempts to modify an existing handle for an existing object.",
     ),
     'options'  => array(
-      'repeat' => dt("Specifies the total number of PIDs, beginning with 'first' to be processed.  Default is 1."),
-      'force'  => dt("If specified, handle assignment will proceed even if the mods:identifier[@type='hdl'] element is not compatible with handle_op."),
+      'repeat' => t("Specifies the total number of PIDs, beginning with 'first' to be processed.  Default is 1."),
+      'force'  => t("If specified, handle assignment will proceed even if the mods:identifier[@type='hdl'] element is not compatible with handle_op."),
     ),
     'examples' => array(
       'Example' => "drush iduH grinnell:10000 Create --repeat=100",
@@ -216,13 +217,13 @@ function idu_drush_command( ) {
   );
 
   $items['iduSpecial'] = array(
-    'description' => dt("Attempts to apply the specified 'Special' operation to a single, existing PID."),
+    'description' => t("Attempts to apply the specified 'Special' operation to a single, existing PID."),
     'arguments'   => array(
-      'pidAlpha'  => dt('The primary PID to be processed.  Example: grinnell:52.'),
-      'operation' => dt('Completes the name of the idu_drush_special_OPERATION function to be called. Available operations are: PrintRI, SingleCompound, FixArtist and FixStatus.'),
+      'pidAlpha'  => t('The primary PID to be processed.  Example: grinnell:52.'),
+      'operation' => t('Completes the name of the idu_drush_special_OPERATION function to be called. Available operations are: PrintRI, SingleCompound, FixArtist and FixStatus.'),
     ),
     'options'     => array(
-      'secondary' => dt('An optional secondary PID to be used in the process.  Defaults to NULL.'),
+      'secondary' => t('An optional secondary PID to be used in the process.  Defaults to NULL.'),
     ),
     'examples' => array(
       'Example' => "drush iduS grinnell:622 SingleCompound",
@@ -268,7 +269,7 @@ function idu_drush_prep($pidSpec, &$last, &$pidn, &$range, &$namespace, $return=
 
   // Open a repository connection.
   $my_tuque = islandora_get_tuque_connection( );
-  $repository = $my_tuque->repository;
+  // $repository = $my_tuque->repository;
 
   // Test fetch the islandora:root object to check the connection.
   $pid = "islandora:root";
@@ -321,7 +322,7 @@ function idu_drush_prep($pidSpec, &$last, &$pidn, &$range, &$namespace, $return=
     drush_log("Completed fetch of " . count($pids) . " valid object PIDs.", 'status');
     return $pids;
   } else {
-    return;
+    return FALSE;
   }
 }
 
@@ -709,8 +710,8 @@ function idu_drush_fix_Derivatives($pid) {
         $count += 2;
       }
       if (module_exists('islandora_fits')) {
-        islandora_fits_create_techmd($object, TRUE);
-        ++$count;
+        $fit = islandora_fits_create_techmd($object, TRUE, array('source_dsid'=>'OBJ'));
+        if ($fit['success']) { ++$count; }
       }
       break;
     case 'islandora:pageCModel' :
@@ -722,8 +723,8 @@ function idu_drush_fix_Derivatives($pid) {
         islandora_large_image_create_jp2_derivative($object, TRUE);
       }
       if (module_exists('islandora_fits')) {
-        islandora_fits_create_techmd($object, TRUE);
-        ++$count;
+        $fit = islandora_fits_create_techmd($object, TRUE, array('source_dsid'=>'OBJ'));
+        if ($fit['success']) { ++$count; }
       }
     break;
     case 'islandora:sp_pdf' :
@@ -734,8 +735,8 @@ function idu_drush_fix_Derivatives($pid) {
         islandora_pdf_add_tn_derivative($object, TRUE);
       }
       if (module_exists('islandora_fits')) {
-        islandora_fits_create_techmd($object, TRUE);
-        ++$count;
+        $fit = islandora_fits_create_techmd($object, TRUE, array('source_dsid'=>'OBJ'));
+        if ($fit['success']) { ++$count; }
       }
       break;
     case 'islandora:sp-audioCModel' :
@@ -745,8 +746,8 @@ function idu_drush_fix_Derivatives($pid) {
         islandora_audio_create_mp3($object, TRUE);
       }
       if (module_exists('islandora_fits')) {
-        islandora_fits_create_techmd($object, TRUE);
-        ++$count;
+        $fit = islandora_fits_create_techmd($object, TRUE, array('source_dsid'=>'OBJ'));
+        if ($fit['success']) { ++$count; }
       }
       break;
   }
