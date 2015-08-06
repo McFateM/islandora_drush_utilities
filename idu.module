@@ -6,16 +6,21 @@
  * @return type
  */
 function idu_init( ) {
-  module_load_include('inc', 'repository_control');
-  module_load_include('inc', 'repository_control', 'log_record');
-  module_load_include('inc', 'repository_control', 'csv_cells');
-  module_load_include('inc', 'repository_control', 'object_record');
-  // module_load_include('inc', 'phpexcel');
-  module_load_include('inc', 'islandora_paged_content', 'includes/utilities');
-  module_load_include('inc', 'islandora_paged_content', 'includes/manage_pages');
   // module_load_include('inc', 'idu', 'idu_constants');
-  module_load_include('inc', 'islandora_audio', 'includes/derivatives');
-  module_load_include('inc', 'islandora_fits', 'includes/derivatives');
+  // module_load_include('inc', 'repository_control');
+  // module_load_include('inc', 'repository_control', 'log_record');
+  // module_load_include('inc', 'repository_control', 'csv_cells');
+  // module_load_include('inc', 'repository_control', 'object_record');
+  // module_load_include('inc', 'phpexcel');
+  if (module_exists('islandora_paged_content')) {
+    module_load_include('inc', 'islandora_paged_content', 'includes/utilities');
+    module_load_include('inc', 'islandora_paged_content', 'includes/manage_pages');
+  }
+  if (module_exists('islandora_audio')) { module_load_include('inc', 'islandora_audio', 'includes/derivatives'); }
+  if (module_exists('islandora_fits')) { module_load_include('inc', 'islandora_fits', 'includes/derivatives'); }
+  if (module_exists('islandora_basic_image')) { module_load_include('inc', 'islandora_basic_image', 'includes/derivatives'); }
+  if (module_exists('islandora_large_image')) { module_load_include('inc', 'islandora_large_image', 'includes/derivatives'); }
+  if (module_exists('islandora_pdf')) { module_load_include('inc', 'islandora_pdf', 'includes/derivatives'); }
   return;
 }
 

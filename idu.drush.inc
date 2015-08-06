@@ -703,31 +703,51 @@ function idu_drush_fix_Derivatives($pid) {
   // Create new derivatives.
   switch ($cModel) {
     case 'islandora:sp_basic_image' :
-      islandora_basic_image_create_thumbnail($object, TRUE);
-      islandora_basic_image_create_medium_size($object, TRUE);
-      islandora_fits_create_techmd($object, TRUE);
-      ++ $count;
+      if (module_exists('islandora_basic_image')) {
+        islandora_basic_image_create_thumbnail($object, TRUE);
+        islandora_basic_image_create_medium_size($object, TRUE);
+        $count += 2;
+      }
+      if (module_exists('islandora_fits')) {
+        islandora_fits_create_techmd($object, TRUE);
+        ++$count;
+      }
       break;
     case 'islandora:pageCModel' :
     case 'islandora:sp_large_image_cmodel' :
-      islandora_large_image_create_tn_derivative($object, TRUE);
-      islandora_large_image_create_jpg_derivative($object, TRUE);
-      islandora_large_image_create_jp2_derivative($object, TRUE);
-    islandora_fits_create_techmd($object, TRUE);
-      ++ $count;
-      break;
+      if (module_exists('islandora_large_image')) {
+        $count += 3;
+        islandora_large_image_create_tn_derivative($object, TRUE);
+        islandora_large_image_create_jpg_derivative($object, TRUE);
+        islandora_large_image_create_jp2_derivative($object, TRUE);
+      }
+      if (module_exists('islandora_fits')) {
+        islandora_fits_create_techmd($object, TRUE);
+        ++$count;
+      }
+    break;
     case 'islandora:sp_pdf' :
-      islandora_pdf_add_fulltext_derivative($object, TRUE);
-      islandora_pdf_add_preview_derivative($object, TRUE);
-      islandora_pdf_add_tn_derivative($object, TRUE);
-      islandora_fits_create_techmd($object, TRUE);
-      ++ $count;
+      if (module_exists('islandora_pdf')) {
+        $count += 3;
+        islandora_pdf_add_fulltext_derivative($object, TRUE);
+        islandora_pdf_add_preview_derivative($object, TRUE);
+        islandora_pdf_add_tn_derivative($object, TRUE);
+      }
+      if (module_exists('islandora_fits')) {
+        islandora_fits_create_techmd($object, TRUE);
+        ++$count;
+      }
       break;
     case 'islandora:sp-audioCModel' :
-      islandora_audio_create_thumbnail($object, TRUE);
-      islandora_audio_create_mp3($object, TRUE);
-      islandora_fits_create_techmd($object, TRUE);
-      ++ $count;
+      if (module_exists('islandora_audio')) {
+        $count += 2;
+        islandora_audio_create_thumbnail($object, TRUE);
+        islandora_audio_create_mp3($object, TRUE);
+      }
+      if (module_exists('islandora_fits')) {
+        islandora_fits_create_techmd($object, TRUE);
+        ++$count;
+      }
       break;
   }
 
