@@ -705,6 +705,7 @@ function idu_drush_fix_Derivatives($pid) {
     case 'islandora:sp_basic_image' :
       islandora_basic_image_create_thumbnail($object, TRUE);
       islandora_basic_image_create_medium_size($object, TRUE);
+      islandora_fits_create_techmd($object, TRUE);
       ++ $count;
       break;
     case 'islandora:pageCModel' :
@@ -712,12 +713,14 @@ function idu_drush_fix_Derivatives($pid) {
       islandora_large_image_create_tn_derivative($object, TRUE);
       islandora_large_image_create_jpg_derivative($object, TRUE);
       islandora_large_image_create_jp2_derivative($object, TRUE);
+    islandora_fits_create_techmd($object, TRUE);
       ++ $count;
       break;
     case 'islandora:sp_pdf' :
       islandora_pdf_add_fulltext_derivative($object, TRUE);
       islandora_pdf_add_preview_derivative($object, TRUE);
       islandora_pdf_add_tn_derivative($object, TRUE);
+      islandora_fits_create_techmd($object, TRUE);
       ++ $count;
       break;
     case 'islandora:sp-audioCModel' :
