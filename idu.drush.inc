@@ -162,6 +162,7 @@ function idu_drush_command( ) {
       'xsl'      => t("Specifies the path to the MODS-to-DC transform XSL file to be applied. Defaults to public://mods_to_dc_grinnell-modified-2014-09-24.xsl."),
       'image'    => t("Specifies the path to a jpeg image to be applied by the specified Fix operation.  Defaults to public://audio_thumbnail.jpg."),
       'mime'     => t("Specifies the OBJ MIME type of objects to process.  Defaults to 'image/tiff'."),
+      'only'     => t("Specifies the ONLY DSID to be regenerated, --only=TECHMD is one example. Defaults to * for all derivatives."),
       'convert'  => t("Specifies a file containing ImageMagick 'convert' options for the ConvertTIFtoJP2 fix."),
       'compress' => t("Specifies a file containing Kakadu 'compress' options for the ConvertTIFtoJP2 fix."),
       'sibling'  => t("Specifies the PID of one existing child object in need of a sibling."),
@@ -669,9 +670,9 @@ function drush_idu_iduSpecial($pid, $operation) {
 }
 
 /**
- * Drush idu_fix_* function to regenerate derivatives.  @TODO: Fix me!
+ * Drush idu_fix_* function to regenerate derivatives.
  *
- * Invoke this function using iduF <pid> Derivatives with --repeat if necessary.
+ * Invoke this function using iduF <pids> Derivatives (with --only=TECHMD if you only want new FITS metadata).
  *
  * @param string $pid
  *   The object PID to operate on.
@@ -686,8 +687,11 @@ function idu_drush_fix_Derivatives($pid) {
     return 0;
   }
 
+  $only = drush_get_option('only', '*');
+
   // Check for --mime option.  If present and the object has no OBJ or the OBJ MIME is not of the correct
   // type, then skip this object.
+
   $mime = drush_get_option('mime', NULL);
   if (!is_null($mime)) {
     if (!$obj = $object['OBJ']) { return 0; }
@@ -705,11 +709,16 @@ function idu_drush_fix_Derivatives($pid) {
   switch ($cModel) {
     case 'islandora:sp_basic_image' :
       if (module_exists('islandora_basic_image')) {
-        islandora_basic_image_create_thumbnail($object, TRUE);
-        islandora_basic_image_create_medium_size($object, TRUE);
-        $count += 2;
+        if ($only === '*' || $only === "TN") {
+          islandora_basic_image_create_thumbnail($object, TRUE);
+          $count++;
+        }
+        if ($only === '*' || $only === "MEDIUM_SIZE") {
+          islandora_basic_image_create_medium_size($object, TRUE);
+          $count++;
+        }
       }
-      if (module_exists('islandora_fits')) {
+      if (module_exists('islandora_fits') && ($only === '*' || $only === "TECHMD")) {
         $fit = islandora_fits_create_techmd($object, TRUE, array('source_dsid'=>'OBJ'));
         if ($fit['success']) { ++$count; }
       }
@@ -717,35 +726,56 @@ function idu_drush_fix_Derivatives($pid) {
     case 'islandora:pageCModel' :
     case 'islandora:sp_large_image_cmodel' :
       if (module_exists('islandora_large_image')) {
-        $count += 3;
-        islandora_large_image_create_tn_derivative($object, TRUE);
-        islandora_large_image_create_jpg_derivative($object, TRUE);
-        islandora_large_image_create_jp2_derivative($object, TRUE);
+        if ($only === '*' || $only === "TN") {
+          islandora_large_image_create_tn_derivative($object, TRUE);
+          $count++;
+        }
+        if ($only === '*' || $only === "JPG") {
+          islandora_large_image_create_jpg_derivative($object, TRUE);
+          $count++;
+        }
+        if ($only === '*' || $only === "JP2") {
+          islandora_large_image_create_jp2_derivative($object, TRUE);
+          $count++;
+        }
       }
-      if (module_exists('islandora_fits')) {
+      if (module_exists('islandora_fits') && ($only === '*' || $only === "TECHMD")) {
         $fit = islandora_fits_create_techmd($object, TRUE, array('source_dsid'=>'OBJ'));
         if ($fit['success']) { ++$count; }
       }
     break;
     case 'islandora:sp_pdf' :
       if (module_exists('islandora_pdf')) {
-        $count += 3;
-        islandora_pdf_add_fulltext_derivative($object, TRUE);
-        islandora_pdf_add_preview_derivative($object, TRUE);
-        islandora_pdf_add_tn_derivative($object, TRUE);
+        if ($only === '*' || $only === "FULL_TEXT") {
+          islandora_pdf_add_fulltext_derivative($object, TRUE);
+          $count++;
+        }
+        if ($only === '*' || $only === "PREVIEW") {
+          islandora_pdf_add_preview_derivative($object, TRUE);
+          $count++;
+        }
+        if ($only === '*' || $only === "TN") {
+          islandora_pdf_add_tn_derivative($object, TRUE);
+          $count++;
+        }
       }
-      if (module_exists('islandora_fits')) {
+      if (module_exists('islandora_fits') && ($only === '*' || $only === "TECHMD")) {
         $fit = islandora_fits_create_techmd($object, TRUE, array('source_dsid'=>'OBJ'));
         if ($fit['success']) { ++$count; }
       }
       break;
     case 'islandora:sp-audioCModel' :
       if (module_exists('islandora_audio')) {
-        $count += 2;
-        islandora_audio_create_thumbnail($object, TRUE);
-        islandora_audio_create_mp3($object, TRUE);
+        if ($only === '*' || $only === "TN") {
+          islandora_audio_create_thumbnail($object, TRUE);
+          $count++;
+        }
+        if ($only === '*' || $only === 'PROXY_MP3' ) {
+          islandora_audio_create_mp3($object, TRUE);
+          $count++;
+        }
       }
-      if (module_exists('islandora_fits')) {
+      if (module_exists('islandora_fits') && ($only === '*' || $only === "TECHMD")) {
         $fit = islandora_fits_create_techmd($object, TRUE, array('source_dsid'=>'OBJ'));
         if ($fit['success']) { ++$count; }
       }
