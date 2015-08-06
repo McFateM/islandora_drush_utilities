@@ -4,4 +4,5 @@ description = Drupal 7 custom collection of Drush functions to manipulate Fedora
 package = ICG Modules
 core = 7.x
 dependencies[] = islandora_audio
+dependencies[] = islandora_fits
 files[] = idu.module

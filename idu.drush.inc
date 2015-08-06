@@ -723,6 +723,7 @@ function idu_drush_fix_Derivatives($pid) {
     case 'islandora:sp-audioCModel' :
       islandora_audio_create_thumbnail($object, TRUE);
       islandora_audio_create_mp3($object, TRUE);
+      islandora_fits_create_techmd($object, TRUE);
       ++ $count;
       break;
   }
