@@ -392,10 +392,11 @@ function idu_drush_print_progress($label, $current=NULL, $range=NULL) {
  */
 function idu_drush_fix_Purge($pid, $options=NULL) {
   list($ns, $r) = explode(':', $pid);
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Get this object's health from the available CSV data.  Verify that we have the correct object.
@@ -438,10 +439,11 @@ function idu_drush_fix_Purge($pid, $options=NULL) {
  *   The number of repair operations performed, or zero if none.
  */
 function idu_drush_fix_Relax($pid, $options=NULL) {
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   if (isset($options)) {
@@ -480,7 +482,7 @@ function idu_drush_fix_Relax($pid, $options=NULL) {
  *   The PID number to operate on.
  * @return int
  *   The number of repair operations performed, or zero if none.
- */
+ *
 function idu_drush_fix_RELSMIME($r) {
   die('idu_drush_fix_RELSMIME is disabled.  ');
   $pid = variable_get('icg_namespace').$r;
@@ -525,10 +527,11 @@ function idu_drush_fix_RELSMIME($r) {
  *   The number of repair operations performed, or zero if none.
  */
 function idu_drush_fix_MIMEFix($pid) {
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   $count = 0;
@@ -582,10 +585,10 @@ function idu_drush_fix_MIMEFix($pid) {
  */
 function idu_drush_fix_ChangeText($pid, $options) {
 
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Get the pre-processed find and replace options.
@@ -683,7 +686,7 @@ function idu_drush_fix_Derivatives($pid) {
 
   // For any exception, report and skip this PID
   if (!$object = islandora_object_load($pid)) {
-    drush_log("idu_drush_fix_Derivatives($pid) returned NO object!", 'error');
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
     return 0;
   }
 
@@ -802,10 +805,10 @@ function idu_drush_fix_Derivatives($pid) {
  */
 function idu_drush_fix_DCTransform($pid) {
 
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Check for an existing MODS... if none, we're done.
@@ -865,10 +868,10 @@ function idu_drush_fix_DCTransform($pid) {
  */
 function idu_drush_fix_SelfTransform($pid) {
 
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Check that the specified datastream exists... if not, we're done.
@@ -908,6 +911,9 @@ function idu_drush_fix_SelfTransform($pid) {
  * @return array
  *   The PID numbers of all objects found in the range. The variable icg_last is
  *   automatically set to largest number returned here.
+ *
+ * @TODO This should use a query against the RI!
+ *
  */
 function idu_drush_getPIDs($ns, $first, $last) {
   $pids = array( );
@@ -1029,10 +1035,11 @@ function idu_drush_add_child_to_list($kids, $newKid) {
  *   The number of successful operations performed, or zero if none.
  */
 function idu_drush_special_PrintRI($pid) {
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Get the cModel of the $pid.  Change the cModel of the $compound to be the same.
@@ -1076,10 +1083,10 @@ function idu_drush_special_PrintRI($pid) {
  */
 function idu_drush_fix_isConstituentOf($pid, $options) {
 
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   if ($rels = $object->relationships->get(FEDORA_RELS_EXT_URI, 'isConstituentOf')) {
@@ -1111,11 +1118,10 @@ function idu_drush_fix_isConstituentOf($pid, $options) {
  */
 function idu_drush_fix_TitleBookPage($pid, $options) {
 
-  // Fetch the object.
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Check for hasModel = pageCModel
@@ -1129,11 +1135,11 @@ function idu_drush_fix_TitleBookPage($pid, $options) {
   $rels = $object->relationships->get(ISLANDORA_RELS_EXT_URI, 'isPageNumber');
   $page = $rels[0]['object']['value'];
 
-  // Open the parent
-  try {
-    $pObject = idu_repo( )->getObject($parent);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+
+  // For any exception, report and skip this PID
+  if (!$pObject = islandora_object_load($parent)) {
+    drush_log(__FUNCTION__."($parent) returned NO parent object!", 'error');
+    return 0;
   }
 
   // Apply the parent title and page number to the object label.
@@ -1171,10 +1177,10 @@ function idu_drush_fix_TitleBookPage($pid, $options) {
  */
 function idu_drush_fix_toPHPP($pid, $options) {
 
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   if ($rels = $object->relationships->get(FEDORA_RELS_EXT_URI, 'isMemberOfCollection')) {
@@ -1201,10 +1207,10 @@ function idu_drush_fix_toPHPP($pid, $options) {
  */
 function idu_drush_fix_toIR($pid, $options) {
 
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   if ($rels = $object->relationships->get(FEDORA_RELS_EXT_URI, 'isMemberOfCollection')) {
@@ -1251,10 +1257,10 @@ function drush_idu_iduTest( ) {
  */
 function idu_drush_fix_CompoundTN($pid, $preOpts=NULL) {
 
-  try {
-    $object = idu_repo()->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Get a list of all the child objects.
@@ -1354,10 +1360,11 @@ function idu_drush_fix_CompoundTN($pid, $preOpts=NULL) {
  */
 function idu_drush_fix_PurgeFamily($pid, $options=NULL) {
   list($ns, $r) = explode(':', $pid);
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   $count = 0;
@@ -1404,10 +1411,11 @@ function idu_drush_fix_PurgeFamily($pid, $options=NULL) {
  */
 function idu_drush_fix_PurgeInactive($pid, $options=NULL) {
   list($ns, $r) = explode(':', $pid);
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Get this object's health from the available object_record data.  Verify that we have the correct object.
@@ -1460,10 +1468,10 @@ function idu_drush_fix_IndexSolr($pid) {
  */
 function idu_drush_fix_Thumbnail($pid, $options=NULL) {
 
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   $image = drush_get_option('image', 'public://audio_thumbnail.jpg');
@@ -1560,10 +1568,10 @@ function drush_idu_iduHandle($first, $handle_op) {
  */
 function idu_drush_Handle_Create($pid) {
 
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   $force = drush_get_option('force', FALSE);
@@ -1579,10 +1587,10 @@ function idu_drush_Handle_Create($pid) {
  */
 function idu_drush_Handle_Modify($pid) {
 
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   $force = drush_get_option('force', FALSE);
@@ -1602,10 +1610,10 @@ function idu_drush_Handle_Modify($pid) {
  */
 function idu_drush_fix_ConvertTIFtoJP2($pid, $preOpts=NULL) {
 
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Check for --convert or --compress option.  One must be present, but not both!
@@ -1692,10 +1700,11 @@ function idu_drush_fix_ConvertTIFtoJP2($pid, $preOpts=NULL) {
  *   The number of repair operations performed, or zero if none.
  */
 function idu_drush_fix_Clean($pid, $options=NULL) {
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Below are the DS labels for all datastreams to keep.
@@ -1741,10 +1750,10 @@ function idu_drush_fix_Clean($pid, $options=NULL) {
  */
 function idu_drush_fix_CopyDatastream($pid) {
 
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Check that the specified datastream exists... if not, we're done.
@@ -1801,12 +1810,11 @@ function idu_drush_fix_CopyDatastream($pid) {
  */
 function idu_drush_fix_MakeSibling($pid) {
 
-  // Fetch the intended sibling object...
 
-  try {
-    $object = idu_repo()->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Fetch the existing sibling object...
@@ -1816,10 +1824,10 @@ function idu_drush_fix_MakeSibling($pid) {
     return 0;
   }
 
-  try {
-    $sibling = idu_repo()->getObject($siblingPID);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$sibling = islandora_object_load($siblingPID)) {
+    drush_log(__FUNCTION__."($siblingPID) returned NO object!", 'error');
+    return 0;
   }
 
   $data = islandora_compound_object_retrieve_compound_info($sibling);
@@ -1966,11 +1974,11 @@ function idu_drush_special_FixLocal($pid) {
   for ($i=$p1; $i<=$p2; $i++) {
     $count = 0;
     $pid = "$ns:$i";
-    try {
-      $object = idu_repo()->getObject($pid);
-    } catch (Exception $e) {
-      drush_log("No object found at $pid!", 'error');
-      continue;     // for any exception...skip this PID
+
+    // For any exception, report and skip this PID
+    if (!$object = islandora_object_load($pid)) {
+      drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+      continue;
     }
 
     if ($ds = $object['MODS']) {
@@ -2041,11 +2049,11 @@ function idu_drush_special_FixObjectTitle($pid) {
 
   for ($count=0, $i=$p1; $i<=$p2; $i++) {
     $pid = "$ns:$i";
-    try {
-      $object = idu_repo()->getObject($pid);
-    } catch (Exception $e) {
-      drush_log("No object found at $pid!", 'error');
-      continue;     // for any exception...skip this PID
+
+    // For any exception, report and skip this PID
+    if (!$object = islandora_object_load($pid)) {
+      drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+      continue;
     }
 
     if ($ds = $object['MODS']) {
@@ -2090,10 +2098,10 @@ return;
  */
 function idu_drush_fix_PurgeDatastream($pid) {
 
-  try {
-    $object = idu_repo( )->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Check that the specified datastream exists... if not, we're done.
@@ -2132,12 +2140,11 @@ function idu_drush_fix_PurgeDatastream($pid) {
  */
 function idu_drush_fix_MakeFamily($pid) {
   // @TODO...all of this!
-  // Fetch the intended parent object...
 
-  try {
-    $object = idu_repo()->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Fetch the existing sibling object...
@@ -2147,10 +2154,10 @@ function idu_drush_fix_MakeFamily($pid) {
     return 0;
   }
 
-  try {
-    $sibling = idu_repo()->getObject($siblingPID);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$sibling = islandora_object_load($siblingPID)) {
+    drush_log(__FUNCTION__."($siblingPID) returned NO sibling object!", 'error');
+    return 0;
   }
 
   $data = islandora_compound_object_retrieve_compound_info($sibling);
@@ -2211,12 +2218,10 @@ function idu_drush_fix_MakeFamily($pid) {
  */
 function idu_drush_fix_UpdateDC($pid) {
 
-  // Fetch the intended object...
-
-  try {
-    $object = idu_repo()->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Open the DC datastream and have a look for dc:date and dc:creator.
@@ -2305,11 +2310,10 @@ function idu_drush_fix_UpdateDC($pid) {
 function idu_drush_fix_PurgeElements($pid) {
 
   // Fetch the intended object...
-
-  try {
-    $object = idu_repo()->getObject($pid);
-  } catch (Exception $e) {
-    return 0;  // for any exception...skip this PID
+  // For any exception, report and skip this PID
+  if (!$object = islandora_object_load($pid)) {
+    drush_log(__FUNCTION__."($pid) returned NO object!", 'error');
+    return 0;
   }
 
   // Open the --dsid datastream...
