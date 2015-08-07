@@ -145,10 +145,6 @@ function idu_drush_command( ) {
 
     ),
     'options' => array(
-     // 'fedoraURL' => t("Specifies the URL to Fedora like http://repository7.grinnell.edu:8080/fedora. Default is the example shown here."),
-     // 'username' => t("Specifies the Fedora repository user name. Default is 'fedoraAdmin'."),
-     // 'password' => t("Specifies the password of the Fedora user. There is NO default."),
-     // 'repeat'   => t("Specifies the total number of PIDs, beginning with 'first' to be processed.  Default is 1."),
       'dsid'     => t("Specifies the datastream ID in which to make changes."),
       'collection' => t("Specifies the target collection (may include a wildcard like '*test') from which objects will be selected."),
       'date'     => t("Specifies a dc:date value for the UpdateDC fix.  Default is 'Unspecified'."),
@@ -923,14 +919,14 @@ function idu_drush_getPIDs($ns, $first, $last) {
   // Loop through the repo looking for objects in the specified range.
   for ($largest=0, $i=$first, $notFound=0; $i<=$last; $i++) {
     $pid = "$ns:$i";
-    try {
-      $object = idu_repo( )->getObject($pid);
-    } catch (Exception $e) {
-      drush_log("Exception: Attempting to open $pid.  The exception message follows:", 'error');
-      drush_log($e, 'status');
+
+    // For any exception, report and skip this PID
+    if (!$object = islandora_object_load($pid)) {
+      drush_log(__FUNCTION__."($pid) returned NO object!", 'warning');
       $notFound++;
       continue;  // for any exception...skip this PID
     }
+
     $pids[] = $i;
     $largest = $i;
   }
